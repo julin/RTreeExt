@@ -4,7 +4,7 @@
 #include "rtree.h"
 
 template<class DATATYPE, class ELEMTYPE, int NUMDIMS, 
-class ELEMTYPEREAL = ELEMTYPE, int TMAXNODES = 6, int TMINNODES = 2>
+class ELEMTYPEREAL, int TMAXNODES, int TMINNODES>
 class RTreeExt : public RTree<DATATYPE,ELEMTYPE,NUMDIMS,ELEMTYPEREAL,TMAXNODES,TMINNODES>
 {
 protected:
