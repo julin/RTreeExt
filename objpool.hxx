@@ -252,6 +252,24 @@ public:
       return false; 
     return _pages[pn]->valid(pidx);
   }
+
+  std::vector<const T*> getValidData()const
+  {
+    std::vector<const T*> dataArray;
+    size_t pi, off;
+    for (size_t i = 0; i < _size; i++)
+    {
+      pi = getPage(_size, off);
+      if (pi != size_t(-1))
+      {
+        if (_pages[pi]->valid(off))
+        {
+          dataArray.push_back(_pages[pi]->data + off);
+        }
+      }
+    }
+    return dataArray;
+  }
 };
 
 
