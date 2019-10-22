@@ -138,6 +138,7 @@ namespace MEXT_NS {
     void getBoxIncludes(const typename tSpaceHash<T, N>::ValueType *pmin,
       const typename tSpaceHash<T, N>::ValueType *pmax,
       std::function<bool(int32_t)>) const;
+
     void getIncludes(const typename tSpaceHash<T, N>::ValueType *pt,
       std::function<bool(int32_t)>) const;
 
@@ -251,7 +252,7 @@ namespace MEXT_NS {
     else if (N == 2) {
       mStep = sqrt(diff[0] * diff[1]) / resolution;
     }
-    if (dfMax > Gloabals::ZERO)
+    if (dfMax > std::numeric_limits<T>::epsilon())
     {
       mStep = dfMax;
     }
@@ -260,7 +261,7 @@ namespace MEXT_NS {
     val *= mStepInv;
     for (uint32_t i = 0; i < N; i++)
     {
-      mSize[i] = std::floor(val[i]);
+      mSize[i] = (IntN::value_type) std::floor(val[i]);
     }
     return true;
   }
@@ -1249,7 +1250,7 @@ namespace MEXT_NS {
     if (nBox < 2 || enlageFactor <= 1.0)
       return;
 
-    uint32_t num = std::pow(nBox, 1.0 / 3.0);
+    uint32_t num = (uint32_t) std::pow(nBox, 1.0 / 3.0);
     resolution = std::min(resolution, std::max(num, uint32_t(3)));
     Tuple0<ValueType, N> bmin(std::numeric_limits<ValueType>::max());
     Tuple0<ValueType, N> bmax(-std::numeric_limits<ValueType>::max());

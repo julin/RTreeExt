@@ -220,7 +220,7 @@ public:
       }
     }
     _pages[pi]->data[off]=obj;
-    _pages[pi]->set(off,false);
+    _pages[pi]->set((int)off,false);
     _size++;
     return &(_pages[pi]->data[off]);
   }

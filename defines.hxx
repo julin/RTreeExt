@@ -14,12 +14,12 @@ namespace MEXT_NS {
     };
     Tuple0()
     {
-      memset((void*)this->elems, 0, N * sizeof(T));
+      memset((void*)this->data(), 0, N * sizeof(T));
     }
 
     Tuple0(const T* da)
     {
-      memcpy(this->elems, da, N * sizeof(T));
+      memcpy(this->data(), da, N * sizeof(T));
     }
 
     Tuple0(const T& val)
@@ -240,6 +240,182 @@ namespace MEXT_NS {
     }
   };
 
+
+  template <class T>
+  class Triple : public Tuple0<T, 3>
+  {
+  public:
+    Triple() {}
+
+    Triple(const T& a, const T& b, const T& c)
+    {
+      (*this)[0] = a;
+      (*this)[1] = b;
+      (*this)[2] = c;
+    }
+
+    Triple(const T* data)
+      :Tuple0<T, 3>(data)
+    { }
+
+
+    Triple(const Triple<T>& a, const Triple<T>& b)
+    {
+      set(a, b);
+    }
+
+    Triple<T>&   set(const T& a, const T& b, const T& c)
+    {
+      (*this)[0] = a;
+      (*this)[1] = b;
+      (*this)[2] = c;
+      return *this;
+    }
+
+
+    void  set(const Triple<T>& a, const Triple<T>& b)
+    {
+      this->set(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+    }
+
+    Triple<T>& set(const T* da)
+    {
+      this->set(da[0], da[1], da[2]);
+      return *this;
+    }
+
+    void  reverse()
+    {
+      std::swap((*this)[0], (*this)[1]);
+    }
+
+    void sort()
+    {
+      Sort3<T>(this->elems[0], this->elems[1], this->elems[2]);
+    }
+
+    T  dot(const Triple<T>& vec)const
+    {
+      return (*this)[0] * vec[0] + (*this)[1] * vec[1] + (*this)[2] * vec[2];
+    }
+
+    Triple<T> cross(const Triple<T>& vec)const
+    {
+      return Triple<T>((*this)[1] * vec[2] - (*this)[2] * vec[1],
+        (*this)[2] * vec[0] - (*this)[0] * vec[2],
+        (*this)[0] * vec[1] - (*this)[1] * vec[0]);
+    }
+
+    T len2()const
+    {
+      return (*this)[0] * (*this)[0] + (*this)[1] * (*this)[1] + (*this)[2] * (*this)[2];
+    }
+  };
+
+
+  template<class T>
+  inline Triple<T> operator *(const Triple<T>& a, T val) { return Triple<T>(a[0] * val, a[1] * val, a[2] * val); }
+
+  template<class T>
+  /**
+  * @brief The KeyIndex3 class
+  */
+  class  KeyIndex3 : public  Triple<T>
+  {
+  public:
+    KeyIndex3(const T& k0 = T(), const T& k1 = T(), const T& k2 = T())
+    {
+      set(k0, k1, k2);
+    }
+
+    KeyIndex3(const T* k)
+    {
+      set(k[0], k[1], k[2]);
+    }
+
+    KeyIndex3(const  Triple<T>& k)
+    {
+      set(k[0], k[1], k[2]);
+    }
+
+    void  set(const T& k0, const T& k1, const T& k2)
+    {
+      if (k0<k1)
+      {
+        if (k1<k2)
+        {
+          (*this)[0] = k0;
+          (*this)[1] = k1;
+          (*this)[2] = k2;
+        }
+        else
+        {
+          (*this)[2] = k1;
+          if (k0<k2)
+          {
+            (*this)[0] = k0;
+            (*this)[1] = k2;
+          }
+          else
+          {
+            (*this)[0] = k2;
+            (*this)[1] = k0;
+          }
+        }
+      }
+      else
+      {
+        if (k2<k1)
+        {
+          (*this)[0] = k2;
+          (*this)[1] = k1;
+          (*this)[2] = k0;
+        }
+        else
+        {
+          (*this)[0] = k1;
+          if (k2<k0)
+          {
+            (*this)[1] = k2;
+            (*this)[2] = k0;
+          }
+          else
+          {
+            (*this)[1] = k0;
+            (*this)[2] = k2;
+          }
+        }
+
+      }
+    }
+
+    bool operator<(const KeyIndex3<T>& src)const
+    {
+      if ((*this)[0]<src[0]) return true;
+      if (src[0]<(*this)[0]) return false;
+      if ((*this)[1]<src[1]) return true;
+      if (src[1]<(*this)[1]) return false;
+      return (*this)[2]<src[2];
+    }
+
+    template<typename T1>
+    bool  operator==(const KeyIndex3<T1>& src)const
+    {
+      if ((*this)[0] == src[0])
+      {
+        if ((*this)[1] == src[1])
+        {
+          return  (*this)[2] == src[2];
+        }
+      }
+      return false;
+    }
+
+    bool operator!=(const KeyIndex3<T>& src)const
+    {
+      return !(*this == src);
+    }
+  };
 
   template<class POINT, unsigned DIM>
   class tBBox
@@ -593,10 +769,41 @@ namespace MEXT_NS {
     return rt;
   }
 
+  typedef size_t        HashValue;
+  typedef Triple<int>   Int3;
+
+  inline HashValue Hash(HashValue h11, HashValue h21)
+  {
+    HashValue h1(h11);
+    HashValue h2(h21);
+    return HashValue(((h1 << 16) | (h1 >> 16)) ^ h2);
+  }
+
+  inline HashValue Hash(const KeyIndex3<int>& val) { return Hash(Hash(val[0], val[1]), val[2]); }
+
+  inline HashValue Hash(const Int3& val)
+  {
+    return Hash(KeyIndex3<int>(val[0], val[1], val[2]));
+  }
+
+  struct HashInt3
+  {
+    HashValue operator()(const Int3& val) const { return Hash(val); }
+    bool operator()(const Int3& val0, const Int3& val1)const
+    {
+      KeyIndex3<int> k0(val0[0], val0[1], val0[2]);
+      KeyIndex3<int>  k1(val1[0], val1[1], val1[2]);
+      return k0 == k1;
+    }
+  };
+
   typedef Couple<int>          Int2;
   typedef std::vector<Int2>    DInt2Array;
   typedef std::vector<int>     DIntArray;
   typedef std::set<int>        IntSet;
+
+  typedef boost::unordered_set<Int3, HashInt3, HashInt3> Int3Set;
+
 };
 
 
