@@ -3,6 +3,8 @@
 
 #include "rtree.h"
 
+bool BoxLineIntersect(int dim, const double* pmin, const double* pmax, const double* start, const double* end);
+
 template<class DATATYPE, class ELEMTYPE, int NUMDIMS, 
 class ELEMTYPEREAL, int TMAXNODES, int TMINNODES>
 class RTreeExt : public RTree<DATATYPE,ELEMTYPE,NUMDIMS,ELEMTYPEREAL,TMAXNODES,TMINNODES>
