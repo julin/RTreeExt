@@ -808,6 +808,14 @@ public:
 
     return Search1nnVLamda(this->m_root, rect, fun, nn1Data, minDist);
   }
+
+  bool Search1nnVLamda(const ELEMTYPE* a_min, const ELEMTYPE* a_max,
+    std::function<double(DATATYPE)> fun)const
+  {
+    DATATYPE nn1Data=0;
+    ELEMTYPE minDist=0;
+    return Search1nnVLamda(a_min, a_max, fun, nn1Data, minDist);
+  }
 };
 
 typedef RTreeExt<int,double,3> RTree3DInt;
