@@ -1567,13 +1567,13 @@ bool RTREE_QUAL::Search(Node* a_node, Rect* a_rect, int& a_foundCount, std::func
     {
       if(Overlap(a_rect, &a_node->m_branch[index].m_rect))
       {
-        DATATYPE& id = a_node->m_branch[index].m_data;
+        const DATATYPE& id = a_node->m_branch[index].m_data;
         
         // NOTE: There are different ways to return results.  Here's where to modify
         //if(&a_resultCallback)
         {
           ++a_foundCount;
-          if(!a_resultCallback(id, a_context))
+          if(!a_resultCallback(id))
           {
             return false; // Don't continue searching
           }
