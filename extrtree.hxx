@@ -3,7 +3,6 @@
 
 #include "rtree.h"
 
-bool BoxLineIntersect(int dim, const double* pmin, const double* pmax, const double* start, const double* end);
 
 template<class DATATYPE, class ELEMTYPE, int NUMDIMS, 
 class ELEMTYPEREAL, int TMAXNODES, int TMINNODES>
@@ -252,6 +251,7 @@ public:
 
   bool Overlap(const Rect& a_rectA, const ELEMTYPE* start,const ELEMTYPE* end)
   {
+    extern bool BoxLineIntersect(int dim, const double* pmin, const double* pmax, const double* start, const double* end);
     return BoxLineIntersect(NUMDIMS,a_rectA.m_min,a_rectA.m_max,start,end);
   }
 
