@@ -179,7 +179,7 @@ protected:
         {
           if ( currRect.m_min[idx] < rect.m_min[idx] )
             rect.m_min[idx] = currRect.m_min[idx];
-          else if ( currRect.m_max[idx] > rect.m_max[idx] )
+          if ( currRect.m_max[idx] > rect.m_max[idx] )
             rect.m_max[idx] = currRect.m_max[idx]; 
         }
       }
